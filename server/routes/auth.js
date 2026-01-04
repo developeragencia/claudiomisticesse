@@ -157,10 +157,11 @@ router.post('/register/consultor', async (req, res) => {
       function(err) {
         if (err) {
           db.run('ROLLBACK');
-          if (err.message.includes('UNIQUE constraint failed')) {
+          console.error('Erro ao criar consultor:', err);
+          if (err.message && (err.message.includes('UNIQUE constraint failed') || err.message.includes('Duplicate entry') || err.code === 'ER_DUP_ENTRY')) {
             return res.status(400).json({ error: 'Email ou CPF já cadastrado' });
           }
-          return res.status(500).json({ error: 'Erro ao criar usuário' });
+          return res.status(500).json({ error: 'Erro ao criar usuário: ' + (err.message || 'Erro desconhecido') });
         }
 
         const userId = this.lastID;
