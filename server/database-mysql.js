@@ -256,15 +256,22 @@ const initDatabase = async () => {
     `);
 
     // Criar usuário admin padrão (senha: admin123)
-    const bcrypt = require('bcryptjs');
-    const adminPassword = await bcrypt.hash('admin123', 10);
-    
-    const existingAdmins = await query('SELECT id FROM users WHERE email = ?', ['admin@conselhosesotericos.com.br']);
-    if (!existingAdmins || existingAdmins.length === 0) {
-      await query(
-        'INSERT INTO users (nome_completo, cpf, email, senha, tipo, status) VALUES (?, ?, ?, ?, ?, ?)',
-        ['Administrador', '00000000000', 'admin@conselhosesotericos.com.br', adminPassword, 'admin', 'ativo']
-      );
+    try {
+      const bcrypt = require('bcryptjs');
+      const adminPassword = await bcrypt.hash('admin123', 10);
+      
+      const existingAdmins = await query('SELECT id FROM users WHERE email = ?', ['admin@conselhosesotericos.com.br']);
+      if (!existingAdmins || existingAdmins.length === 0) {
+        await query(
+          'INSERT INTO users (nome_completo, cpf, email, senha, tipo, status) VALUES (?, ?, ?, ?, ?, ?)',
+          ['Administrador', '00000000000', 'admin@conselhosesotericos.com.br', adminPassword, 'admin', 'ativo']
+        );
+        console.log('✅ Usuário admin criado');
+      } else {
+        console.log('✅ Usuário admin já existe');
+      }
+    } catch (adminError) {
+      console.warn('⚠️ Erro ao criar admin (pode já existir):', adminError.message);
     }
 
     console.log('Banco de dados MySQL inicializado com sucesso!');
