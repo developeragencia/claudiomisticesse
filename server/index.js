@@ -56,15 +56,27 @@ app.get('/api/health', async (req, res) => {
 // Servir arquivos estáticos do frontend (após build)
 const clientBuildPath = path.join(__dirname, '../client/dist');
 if (fs.existsSync(clientBuildPath)) {
+  console.log(`📁 Servindo frontend de: ${clientBuildPath}`);
   app.use(express.static(clientBuildPath));
   
   // Rota catch-all: serve o index.html para todas as rotas não-API
-  app.get('*', (req, res) => {
+  app.get('*', (req, res, next) => {
     // Não servir index.html para rotas da API
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(clientBuildPath, 'index.html'));
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    
+    // Servir index.html para rotas do frontend
+    const indexPath = path.join(clientBuildPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      res.status(404).send('Frontend não encontrado. Execute npm run build');
     }
   });
+} else {
+  console.warn(`⚠️  Frontend não encontrado em: ${clientBuildPath}`);
+  console.warn('   Execute: npm run build');
 }
 
 const PORT = process.env.PORT || 5000;
