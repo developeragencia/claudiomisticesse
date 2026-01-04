@@ -40,21 +40,51 @@ if (useMySQL) {
             lastID: results.insertId || null,
             changes: results.affectedRows || 0
           };
-          if (callback) {
-            if (typeof callback === 'function') {
-              callback.call(result, null);
-            }
+          if (callback && typeof callback === 'function') {
+            // Chamar callback com contexto correto (this.lastID)
+            callback.call(result, null);
           }
         })
         .catch(error => {
+          console.error('Erro no database-adapter.run:', error);
           if (callback && typeof callback === 'function') {
-            callback.call({ lastID: null, changes: 0 }, error);
+            const errorResult = { lastID: null, changes: 0 };
+            callback.call(errorResult, error);
           }
         });
       // Retornar objeto com lastID e changes para compatibilidade
       return {
         lastID: null,
         changes: 0
+      };
+    },
+    
+    serialize: (callback) => {
+      // MySQL não precisa de serialize, mas mantemos para compatibilidade
+      if (callback && typeof callback === 'function') {
+        callback();
+      }
+    },
+    
+    prepare: (sql) => {
+      // Para MySQL, retornamos um objeto que simula prepare
+      return {
+        run: (params, callback) => {
+          mysqlDb.query(sql, params || [])
+            .then(results => {
+              if (callback && typeof callback === 'function') {
+                callback.call({ lastID: results.insertId || null, changes: results.affectedRows || 0 }, null);
+              }
+            })
+            .catch(error => {
+              if (callback && typeof callback === 'function') {
+                callback.call({ lastID: null, changes: 0 }, error);
+              }
+            });
+        },
+        finalize: () => {
+          // Não precisa fazer nada no MySQL
+        }
       };
     }
   };

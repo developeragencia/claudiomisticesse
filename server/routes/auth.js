@@ -148,78 +148,78 @@ router.post('/register/consultor', async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(senha, 10);
 
-  db.serialize(() => {
-    db.run('BEGIN TRANSACTION');
-
-    db.run(
-      'INSERT INTO users (nome_completo, cpf, email, senha, tipo) VALUES (?, ?, ?, ?, ?)',
-      [nome_completo, cpf, email, hashedPassword, 'consultor'],
-      function(err) {
-        if (err) {
-          db.run('ROLLBACK');
-          console.error('Erro ao criar consultor:', err);
-          if (err.message && (err.message.includes('UNIQUE constraint failed') || err.message.includes('Duplicate entry') || err.code === 'ER_DUP_ENTRY')) {
-            return res.status(400).json({ error: 'Email ou CPF já cadastrado' });
-          }
-          return res.status(500).json({ error: 'Erro ao criar usuário: ' + (err.message || 'Erro desconhecido') });
+  // Para MySQL, não usamos transações com serialize, fazemos sequencialmente
+  db.run(
+    'INSERT INTO users (nome_completo, cpf, email, senha, tipo) VALUES (?, ?, ?, ?, ?)',
+    [nome_completo, cpf, email, hashedPassword, 'consultor'],
+    async function(err) {
+      if (err) {
+        console.error('Erro ao criar consultor (users):', err);
+        if (err.message && (err.message.includes('UNIQUE constraint failed') || err.message.includes('Duplicate entry') || err.code === 'ER_DUP_ENTRY')) {
+          return res.status(400).json({ error: 'Email ou CPF já cadastrado' });
         }
-
-        const userId = this.lastID;
-
-        db.run(
-          'INSERT INTO consultores (user_id, nome_artistico, especialidade, categoria, preco_minuto, biografia, anos_experiencia, foto_perfil, imagem_capa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-          [userId, nome_artistico, especialidade, categoria, preco_minuto, biografia, anos_experiencia || null, foto_perfil, imagem_capa || null],
-          function(err) {
-            if (err) {
-              db.run('ROLLBACK');
-              return res.status(500).json({ error: 'Erro ao criar perfil de consultor' });
-            }
-
-            const consultorId = this.lastID;
-
-            // Inserir métodos de consulta
-            if (metodos && Array.isArray(metodos) && metodos.length > 0) {
-              const stmt = db.prepare('INSERT INTO consultor_metodos (consultor_id, metodo) VALUES (?, ?)');
-              metodos.forEach(metodo => {
-                stmt.run([consultorId, metodo]);
-              });
-              stmt.finalize();
-            }
-
-            db.run('COMMIT');
-
-            const token = jwt.sign(
-              {
-                id: userId,
-                email: email,
-                tipo: 'consultor',
-                nome: nome_completo
-              },
-              JWT_SECRET,
-              { expiresIn: '7d' }
-            );
-
-            res.status(201).json({
-              token,
-              user: {
-                id: userId,
-                nome: nome_completo,
-                email: email,
-                tipo: 'consultor',
-                status: 'ativo',
-                saldo: 0,
-                consultor: {
-                  id: consultorId,
-                  nome_artistico: nome_artistico,
-                  status_aprovacao: 'pendente'
-                }
-              }
-            });
-          }
-        );
+        return res.status(500).json({ error: 'Erro ao criar usuário: ' + (err.message || 'Erro desconhecido') });
       }
-    );
-  });
+
+      const userId = this.lastID;
+
+      db.run(
+        'INSERT INTO consultores (user_id, nome_artistico, especialidade, categoria, preco_minuto, biografia, anos_experiencia, foto_perfil, imagem_capa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [userId, nome_artistico, especialidade, categoria, preco_minuto, biografia, anos_experiencia || null, foto_perfil, imagem_capa || null],
+        function(err) {
+          if (err) {
+            console.error('Erro ao criar consultor (consultores):', err);
+            // Tentar remover o usuário criado
+            db.run('DELETE FROM users WHERE id = ?', [userId], () => {});
+            return res.status(500).json({ error: 'Erro ao criar perfil de consultor: ' + (err.message || 'Erro desconhecido') });
+          }
+
+          const consultorId = this.lastID;
+
+          // Inserir métodos de consulta
+          if (metodos && Array.isArray(metodos) && metodos.length > 0) {
+            const stmt = db.prepare('INSERT INTO consultor_metodos (consultor_id, metodo) VALUES (?, ?)');
+            metodos.forEach(metodo => {
+              stmt.run([consultorId, metodo], (err) => {
+                if (err) {
+                  console.error('Erro ao inserir método:', err);
+                }
+              });
+            });
+            stmt.finalize();
+          }
+
+          const token = jwt.sign(
+            {
+              id: userId,
+              email: email,
+              tipo: 'consultor',
+              nome: nome_completo
+            },
+            JWT_SECRET,
+            { expiresIn: '7d' }
+          );
+
+          res.status(201).json({
+            token,
+            user: {
+              id: userId,
+              nome: nome_completo,
+              email: email,
+              tipo: 'consultor',
+              status: 'ativo',
+              saldo: 0,
+              consultor: {
+                id: consultorId,
+                nome_artistico: nome_artistico,
+                status_aprovacao: 'pendente'
+              }
+            }
+          });
+        }
+      );
+    }
+  );
 });
 
 // Verificar token
