@@ -25,14 +25,18 @@ async function healthCheck() {
         health.status = 'error';
       }
     } else {
-      // SQLite
-      db.get('SELECT 1 as test', [], (err) => {
-        if (err) {
-          health.database = 'sqlite_error';
-          health.status = 'error';
-        } else {
-          health.database = 'sqlite_connected';
-        }
+      // SQLite - usar callback com Promise
+      return new Promise((resolve) => {
+        db.get('SELECT 1 as test', [], (err) => {
+          if (err) {
+            health.database = 'sqlite_error';
+            health.status = 'error';
+            health.error = err.message;
+          } else {
+            health.database = 'sqlite_connected';
+          }
+          resolve(health);
+        });
       });
     }
   } catch (error) {
