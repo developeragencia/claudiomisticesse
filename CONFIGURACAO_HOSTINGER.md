@@ -24,9 +24,24 @@
 - ✅ API base URL configurada para produção
 - ✅ Usa domínio correto quando em produção
 
-## 📝 Arquivo `.env` Criado
+## 📝 Arquivo `.env` Necessário
 
-O arquivo `.env` foi criado com todas as credenciais. **NÃO** faça commit deste arquivo (já está no .gitignore).
+Crie o arquivo `.env` na raiz do projeto no Hostinger com o seguinte conteúdo:
+
+```
+DB_HOST=localhost
+DB_USER=u812652203_misticescoter1
+DB_PASSWORD=Conselhos9500933
+DB_NAME=u812652203_misticoesoteri
+NODE_ENV=production
+PORT=5000
+JWT_SECRET=seu_jwt_secret_muito_seguro_aqui_altere_em_producao
+SITE_URL=https://conselhosesotericos.com.br
+API_URL=https://conselhosesotericos.com.br
+UPLOAD_DIR=./server/uploads
+```
+
+**NÃO** faça commit do arquivo `.env` (já está no .gitignore). Use o `.env.example` como referência.
 
 ## 🔧 Para Aplicar no Hostinger
 
