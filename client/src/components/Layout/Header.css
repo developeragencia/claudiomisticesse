@@ -25,14 +25,11 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 14px;
-  font-family: var(--fonte-titulo);
-  font-size: 26px;
-  font-weight: 600;
-  color: var(--cor-azul-escuro);
+  justify-content: center;
   text-decoration: none;
   transition: all 0.3s ease;
   z-index: 10;
+  height: 60px;
 }
 
 .logo:hover {
@@ -40,40 +37,17 @@
 }
 
 .logo-img {
-  height: 48px;
+  height: 60px;
   width: auto;
-  filter: drop-shadow(0 2px 8px rgba(124, 58, 237, 0.3));
+  max-width: 200px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(124, 58, 237, 0.2));
   transition: all 0.3s ease;
 }
 
 .logo:hover .logo-img {
-  filter: drop-shadow(0 4px 12px rgba(124, 58, 237, 0.5));
-  transform: rotate(5deg);
-}
-
-.logo-text {
-  background: var(--gradient-mystic);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.02em;
-  position: relative;
-}
-
-.logo-text::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: var(--gradient-mystic);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-}
-
-.logo:hover .logo-text::after {
-  transform: scaleX(1);
+  filter: drop-shadow(0 4px 12px rgba(124, 58, 237, 0.4));
+  transform: scale(1.05);
 }
 
 .nav {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import axios from 'axios'
+import api, { getImageUrl } from '../utils/api'
 import './BlogPost.css'
 
 const BlogPost = () => {
@@ -14,7 +14,7 @@ const BlogPost = () => {
 
   const fetchPost = async () => {
     try {
-      const response = await axios.get(`/api/posts/${id}`)
+      const response = await api.get(`/api/posts/${id}`)
       setPost(response.data)
     } catch (error) {
       console.error('Erro ao buscar post:', error)
@@ -30,7 +30,7 @@ const BlogPost = () => {
     <div className="blog-post-page">
       {post.imagem_capa && (
         <div className="post-hero" style={{
-          backgroundImage: `url(http://localhost:5000${post.imagem_capa})`
+          backgroundImage: `url(${getImageUrl(post.imagem_capa)})`
         }}></div>
       )}
       <div className="container">

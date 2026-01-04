@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import axios from 'axios'
+import api, { getImageUrl } from '../utils/api'
 import './ConsultorDetalhes.css'
 
 const ConsultorDetalhes = () => {
@@ -14,7 +14,7 @@ const ConsultorDetalhes = () => {
 
   const fetchConsultor = async () => {
     try {
-      const response = await axios.get(`/api/consultores/${id}`)
+      const response = await api.get(`/api/consultores/${id}`)
       setConsultor(response.data)
     } catch (error) {
       console.error('Erro ao buscar consultor:', error)
@@ -30,13 +30,13 @@ const ConsultorDetalhes = () => {
     <div className="consultor-detalhes-page">
       <div className="consultor-hero" style={{
         backgroundImage: consultor.imagem_capa 
-          ? `url(http://localhost:5000${consultor.imagem_capa})`
+          ? `url(${getImageUrl(consultor.imagem_capa)})`
           : 'linear-gradient(135deg, #7c3aed, #ec4899)'
       }}>
         <div className="container">
           <div className="consultor-header">
             <div className="consultor-avatar-large">
-              <img src={consultor.foto_perfil ? `http://localhost:5000${consultor.foto_perfil}` : '/avatar-default.png'} alt={consultor.nome_artistico} />
+              <img src={consultor.foto_perfil ? getImageUrl(consultor.foto_perfil) : '/logo.svg'} alt={consultor.nome_artistico} />
               {consultor.status === 'online' && <span className="status-badge-large online"></span>}
             </div>
             <div className="consultor-header-info">

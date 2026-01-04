@@ -209,12 +209,25 @@
 }
 
 @media (max-width: 768px) {
+  .register-page {
+    padding: 1.5rem 1rem;
+  }
+  
   .tipo-selection {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .register-card {
-    padding: 24px;
+    padding: 1.5rem;
+  }
+  
+  .register-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .form-section h3 {
+    font-size: 1.125rem;
   }
 }
 

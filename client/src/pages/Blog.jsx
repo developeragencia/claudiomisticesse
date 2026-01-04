@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
+import api, { getImageUrl } from '../utils/api'
 import './Blog.css'
 
 const Blog = () => {
@@ -13,7 +13,7 @@ const Blog = () => {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get('/api/posts/publicos')
+      const response = await api.get('/api/posts/publicos')
       setPosts(response.data)
     } catch (error) {
       console.error('Erro ao buscar posts:', error)
@@ -39,7 +39,7 @@ const Blog = () => {
               <Link key={post.id} to={`/blog/${post.id}`} className="blog-card">
                 {post.imagem_capa && (
                   <div className="blog-image" style={{
-                    backgroundImage: `url(http://localhost:5000${post.imagem_capa})`
+                    backgroundImage: `url(${getImageUrl(post.imagem_capa)})`
                   }}></div>
                 )}
                 <div className="blog-content">

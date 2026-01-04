@@ -3,13 +3,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 2rem 1rem;
   background: var(--cor-cinza-claro);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .login-container {
   width: 100%;
   max-width: 450px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .login-card {

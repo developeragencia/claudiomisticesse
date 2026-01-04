@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
+import api, { getImageUrl } from '../utils/api'
 import './Consultores.css'
 
 const Consultores = () => {
@@ -24,7 +24,7 @@ const Consultores = () => {
       if (filtros.categoria) params.append('categoria', filtros.categoria)
       if (filtros.status) params.append('status', filtros.status)
       
-      const response = await axios.get(`/api/consultores?${params.toString()}`)
+      const response = await api.get(`/api/consultores?${params.toString()}`)
       setConsultores(response.data)
     } catch (error) {
       console.error('Erro ao buscar consultores:', error)
@@ -80,12 +80,12 @@ const Consultores = () => {
               <div key={consultor.id} className="consultor-card">
                 <div className="consultor-cover" style={{
                   backgroundImage: consultor.imagem_capa 
-                    ? `url(http://localhost:5000${consultor.imagem_capa})`
+                    ? `url(${getImageUrl(consultor.imagem_capa)})`
                     : 'linear-gradient(135deg, #7c3aed, #ec4899)'
                 }}>
                   <div className="consultor-avatar">
                     <img 
-                      src={consultor.foto_perfil ? `http://localhost:5000${consultor.foto_perfil}` : '/avatar-default.png'} 
+                      src={consultor.foto_perfil ? getImageUrl(consultor.foto_perfil) : '/logo.svg'} 
                       alt={consultor.nome_artistico}
                     />
                     {consultor.status === 'online' && <span className="status-badge online"></span>}

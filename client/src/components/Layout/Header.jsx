@@ -26,8 +26,7 @@ const Header = () => {
       <div className="container">
         <div className="header-content">
           <Link to="/" className="logo">
-            <img src="/logo.svg" alt="Conselhos Esotéricos" className="logo-img" />
-            <span className="logo-text">Conselhos Esotéricos</span>
+            <img src="/logo.png" alt="Conselhos Esotéricos" className="logo-img" onError={(e) => { e.target.src = '/logo.svg'; }} />
           </Link>
 
           <nav className={`nav ${menuOpen ? 'nav-open' : ''}`}>
@@ -74,4 +73,3 @@ const Header = () => {
 }
 
 export default Header
-
