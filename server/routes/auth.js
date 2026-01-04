@@ -97,10 +97,11 @@ router.post('/register/cliente', async (req, res) => {
     [nome_completo, cpf, email, hashedPassword, 'cliente'],
     function(err) {
       if (err) {
-        if (err.message.includes('UNIQUE constraint failed')) {
+        console.error('Erro ao criar usuário:', err);
+        if (err.message && (err.message.includes('UNIQUE constraint failed') || err.message.includes('Duplicate entry') || err.code === 'ER_DUP_ENTRY')) {
           return res.status(400).json({ error: 'Email ou CPF já cadastrado' });
         }
-        return res.status(500).json({ error: 'Erro ao criar usuário' });
+        return res.status(500).json({ error: 'Erro ao criar usuário: ' + (err.message || 'Erro desconhecido') });
       }
 
       const token = jwt.sign(
