@@ -264,7 +264,6 @@ router.patch('/:id/finalizar', authenticateToken, requireConsultor, (req, res) =
       return res.status(404).json({ error: 'Perfil de consultor não encontrado' });
     }
 
-    db.serialize(() => {
       db.get('SELECT * FROM consultas WHERE id = ? AND consultor_id = ?', [id, consultor.id], (err, consulta) => {
         if (err || !consulta) {
           return res.status(404).json({ error: 'Consulta não encontrada' });
@@ -288,7 +287,6 @@ router.patch('/:id/finalizar', authenticateToken, requireConsultor, (req, res) =
 
         res.json({ message: 'Consulta finalizada com sucesso' });
       });
-    });
   });
 });
 
