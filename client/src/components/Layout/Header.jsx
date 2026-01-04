@@ -26,7 +26,16 @@ const Header = () => {
       <div className="container">
         <div className="header-content">
           <Link to="/" className="logo">
-            <img src="/logo.png" alt="Conselhos Esotéricos" className="logo-img" />
+            <img 
+              src="/logo.png" 
+              alt="Conselhos Esotéricos" 
+              className="logo-img"
+              onError={(e) => {
+                if (e.target.src !== '/logo.svg') {
+                  e.target.src = '/logo.svg';
+                }
+              }}
+            />
           </Link>
 
           <nav className={`nav ${menuOpen ? 'nav-open' : ''}`}>
