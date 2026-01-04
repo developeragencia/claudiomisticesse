@@ -37,9 +37,20 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/config', require('./routes/config'));
 app.use('/api/upload', require('./routes/upload'));
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'API funcionando' });
+// Health check melhorado
+const healthCheck = require('./healthcheck');
+app.get('/api/health', async (req, res) => {
+  try {
+    const health = await healthCheck();
+    const statusCode = health.status === 'ok' ? 200 : 503;
+    res.status(statusCode).json(health);
+  } catch (error) {
+    res.status(503).json({ 
+      status: 'error', 
+      message: 'Serviço indisponível',
+      error: error.message 
+    });
+  }
 });
 
 // Servir arquivos estáticos do frontend (após build)
@@ -58,13 +69,19 @@ if (fs.existsSync(clientBuildPath)) {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+// Trust proxy para funcionar corretamente com Hostinger
+app.set('trust proxy', 1);
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Servidor rodando na porta ${PORT}`);
+  console.log(`🌐 Site: ${process.env.SITE_URL || 'https://conselhosesotericos.com.br'}`);
   if (fs.existsSync(clientBuildPath)) {
-    console.log(`Frontend sendo servido a partir de ${clientBuildPath}`);
+    console.log(`✅ Frontend sendo servido a partir de ${clientBuildPath}`);
   } else {
-    console.log(`Frontend não encontrado em ${clientBuildPath}. Execute 'npm run build' primeiro.`);
+    console.log(`⚠️ Frontend não encontrado em ${clientBuildPath}. Execute 'npm run build' primeiro.`);
   }
+  console.log(`📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🗄️  Banco de dados: ${process.env.DB_HOST ? 'MySQL' : 'SQLite'}`);
 });
 
 module.exports = app;

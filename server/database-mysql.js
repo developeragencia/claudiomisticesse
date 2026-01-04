@@ -9,7 +9,10 @@ const dbConfig = {
   database: process.env.DB_NAME || 'conselhos_esotericos',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  // Configurações adicionais para Hostinger
+  charset: 'utf8mb4',
+  timezone: '-03:00'
 };
 
 // Criar pool de conexões

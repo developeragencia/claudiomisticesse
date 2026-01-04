@@ -1,7 +1,9 @@
 import axios from 'axios'
 
 // Configurar base URL da API
-const API_BASE_URL = import.meta.env.VITE_API_URL || ''
+// Em produção, usa o mesmo domínio (mesmo servidor)
+// Em desenvolvimento, usa localhost
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.MODE === 'production' ? '' : 'http://localhost:5000')
 
 const api = axios.create({
   baseURL: API_BASE_URL,
