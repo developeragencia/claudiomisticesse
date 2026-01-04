@@ -212,10 +212,12 @@
   .logo {
     font-size: 0;
     line-height: 0;
+    height: 60px;
   }
 
   .logo-img {
-    height: 40px;
+    height: 60px;
+    max-width: 200px;
   }
 
   .menu-toggle {
