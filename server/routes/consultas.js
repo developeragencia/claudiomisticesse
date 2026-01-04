@@ -204,7 +204,6 @@ router.patch('/:id/recusar', authenticateToken, requireConsultor, (req, res) => 
       return res.status(404).json({ error: 'Perfil de consultor não encontrado' });
     }
 
-    db.serialize(() => {
       // Buscar consulta
       db.get('SELECT * FROM consultas WHERE id = ? AND consultor_id = ?', [id, consultor.id], (err, consulta) => {
         if (err || !consulta || consulta.status !== 'pendente') {

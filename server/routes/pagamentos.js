@@ -76,7 +76,6 @@ router.post('/creditos', authenticateToken, requireCliente, (req, res) => {
 router.patch('/:id/aprovar', authenticateToken, requireAdmin, (req, res) => {
   const { id } = req.params;
 
-  db.serialize(() => {
     db.get('SELECT * FROM pagamentos WHERE id = ?', [id], (err, pagamento) => {
       if (err || !pagamento) {
         return res.status(404).json({ error: 'Pagamento não encontrado' });
