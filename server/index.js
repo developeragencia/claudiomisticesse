@@ -18,6 +18,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // O adaptador permite usar SQLite (dev) ou MySQL (produção) com a mesma interface
 if (process.env.NODE_ENV === 'production' || process.env.DB_HOST) {
   console.log('🔵 Inicializando MySQL (produção)...');
+  console.log(`   Host: ${process.env.DB_HOST || 'localhost'}`);
+  console.log(`   Database: ${process.env.DB_NAME || 'conselhos_esotericos'}`);
+  console.log(`   User: ${process.env.DB_USER || 'root'}`);
   require('./database-mysql');
 } else {
   console.log('🟢 Inicializando SQLite (desenvolvimento)...');
@@ -45,12 +48,25 @@ app.get('/api/health', async (req, res) => {
     const statusCode = health.status === 'ok' ? 200 : 503;
     res.status(statusCode).json(health);
   } catch (error) {
+    console.error('Erro no health check:', error);
     res.status(503).json({ 
       status: 'error', 
       message: 'Serviço indisponível',
-      error: error.message 
+      error: error.message,
+      timestamp: new Date().toISOString()
     });
   }
+});
+
+// Rota de teste básico
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    message: 'API funcionando',
+    timestamp: new Date().toISOString(),
+    node_env: process.env.NODE_ENV,
+    port: process.env.PORT || 5000
+  });
 });
 
 // Servir arquivos estáticos do frontend (após build)
