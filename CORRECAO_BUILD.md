@@ -47,3 +47,4 @@ O script irá:
 
 Execute `.\build.bat` novamente e o build deve funcionar corretamente!
 
+

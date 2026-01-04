@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Plataforma de consultas esotéricas online",
   "main": "server/index.js",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd server && nodemon index.js",
@@ -10,9 +14,9 @@
     "build": "cd client && npm run build",
     "install-all": "npm install && cd server && npm install && cd ../client && npm install",
     "start": "node server/index.js",
-    "start:prod": "cd server && npm start"
+    "postinstall": "cd server && npm install --production && cd ../client && npm install && npm run build"
   },
-  "keywords": ["esoteric", "consultations", "platform"],
+  "keywords": ["esoteric", "consultations", "platform", "nodejs", "express", "react", "vite"],
   "author": "",
   "license": "ISC",
   "devDependencies": {

@@ -15,7 +15,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Inicializar banco de dados
-require('./database');
+// Em produção (Hostinger), usa MySQL. Em desenvolvimento, usa SQLite
+if (process.env.NODE_ENV === 'production' || process.env.DB_HOST) {
+  console.log('🔵 Usando MySQL (produção)');
+  require('./database-mysql');
+} else {
+  console.log('🟢 Usando SQLite (desenvolvimento)');
+  require('./database');
+}
 
 // Rotas
 app.use('/api/auth', require('./routes/auth'));

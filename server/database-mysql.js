@@ -274,8 +274,11 @@ const initDatabase = async () => {
   }
 };
 
-// Inicializar banco ao carregar o módulo
-initDatabase();
+// Inicializar banco ao carregar o módulo (apenas se não houver erro)
+initDatabase().catch(err => {
+  console.error('Erro ao inicializar banco de dados MySQL:', err);
+  // Não impede o servidor de iniciar, mas loga o erro
+});
 
 module.exports = {
   pool,
